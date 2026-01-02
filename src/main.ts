@@ -1,10 +1,14 @@
 import { NestFactory } from '@nestjs/core';
 import { ValidationPipe } from '@nestjs/common';
 import { SwaggerModule, DocumentBuilder } from '@nestjs/swagger';
+import helmet from 'helmet';
 import { AppModule } from './app.module';
 
 async function bootstrap(): Promise<void> {
   const app = await NestFactory.create(AppModule);
+
+  // Security
+  app.use(helmet());
 
   // Global validation pipe
   app.useGlobalPipes(
@@ -21,8 +25,10 @@ async function bootstrap(): Promise<void> {
   // Swagger configuration
   const config = new DocumentBuilder()
     .setTitle('CommerceFlow API')
-    .setDescription('CommerceFlow E-commerce Backend API - Product Catalog Management')
+    .setDescription('CommerceFlow E-commerce Backend API')
     .setVersion('1.0')
+    .addBearerAuth()
+    .addTag('Authentication', 'User authentication and authorization')
     .addTag('Products', 'Product CRUD operations')
     .build();
 
