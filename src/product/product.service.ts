@@ -8,15 +8,15 @@ import type { Product } from '@prisma/client';
 export class ProductService {
     constructor(private readonly prisma: PrismaService) { }
 
-    async create(createProductDto: CreateProductDto): Promise<Product> {
-        const { categoryId, ...productData } = createProductDto;
-        return this.prisma.product.create({
-            data: {
-                ...productData,
-                categoryId,
-            },
-        });
-    }
+    // async create(createProductDto: CreateProductDto): Promise<Product> {
+    //     const { categoryId, ...productData } = createProductDto;
+    //     return this.prisma.product.create({
+    //         data: {
+    //             ...productData,
+    //             categoryId,
+    //         },
+    //     });
+    // }
  
     async findAll(): Promise<Product[]> {
         return this.prisma.product.findMany({
