@@ -23,14 +23,16 @@ async function bootstrap(): Promise<void> {
   );
 
   // Swagger configuration
-  const config = new DocumentBuilder()
-    .setTitle('CommerceFlow API')
-    .setDescription('CommerceFlow E-commerce Backend API')
-    .setVersion('1.0')
-    .addBearerAuth()
-    .addTag('Authentication', 'User authentication and authorization')
-    .addTag('Products', 'Product CRUD operations')
-    .build();
+const config = new DocumentBuilder()
+  .setTitle('CommerceFlow API')
+  .setDescription('CommerceFlow E-commerce Backend API')
+  .setVersion('1.0')
+  .addBearerAuth()
+  .addTag('Authentication', 'User authentication and authorization')
+  .addTag('Categories', 'Category management')
+  .addTag('Products', 'Product CRUD operations')
+  .build();
+
 
   const document = SwaggerModule.createDocument(app, config);
   SwaggerModule.setup('api/docs', app, document);
