@@ -31,6 +31,7 @@ const config = new DocumentBuilder()
   .addTag('Authentication', 'User authentication and authorization')
   .addTag('Categories', 'Category management')
   .addTag('Products', 'Product CRUD operations')
+  .addTag('Inventory', 'Stock management (SKU)')
   .build();
 
 
