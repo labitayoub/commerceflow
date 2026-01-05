@@ -32,6 +32,7 @@ const config = new DocumentBuilder()
   .addTag('Categories', 'Category management')
   .addTag('Products', 'Product CRUD operations')
   .addTag('Inventory', 'Stock management (SKU)')
+  .addTag('Orders', 'Order management and workflow')
   .build();
 
 
