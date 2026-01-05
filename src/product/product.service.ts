@@ -9,27 +9,23 @@ import type { Product } from '@prisma/client';
 export class ProductService {
   constructor(private readonly prisma: PrismaService) {}
 
-  async create(createProductDto: CreateProductDto): Promise<Product> {
-    const { categoryId, stock, ...productData } = createProductDto;
-    
-    // Créer le produit avec son SKU (stock)
-    return this.prisma.product.create({
-      data: {
-        ...productData,
-        categoryId,
-        sku: {
-          create: {
-            stock,
-            reserved: 0,
-          },
+async create(createProductDto: CreateProductDto): Promise<Product> {
+  const { categoryId, stock, ...productData } = createProductDto;
+  return this.prisma.product.create({
+    data: {
+      ...productData,
+      categoryId,
+      sku: {
+        create: {
+          stock: stock || 0,
+          reserved: 0,
         },
       },
-      include: { 
-        category: true,
-        sku: true,
-      },
-    });
-  }
+    },
+    include: { category: true, sku: true },
+  });
+}
+
 
   async findAll(filters: FilterProductDto) {
     const { page = 1, limit = 10, categoryId, search, minPrice, maxPrice } = filters;
@@ -54,19 +50,17 @@ export class ProductService {
       if (maxPrice !== undefined) where.price.lte = maxPrice;
     }
 
-    const [products, total] = await Promise.all([
-      this.prisma.product.findMany({
-        where,
-        skip,
-        take: limit,
-        orderBy: { createdAt: 'desc' },
-        include: { 
-          category: true,
-          sku: true,
-        },
-      }),
-      this.prisma.product.count({ where }),
-    ]);
+const [products, total] = await Promise.all([
+  this.prisma.product.findMany({
+    where,
+    skip,
+    take: limit,
+    orderBy: { createdAt: 'desc' },
+    include: { category: true, sku: true },
+  }),
+  this.prisma.product.count({ where }),
+]);
+
 
     return {
       data: products,
