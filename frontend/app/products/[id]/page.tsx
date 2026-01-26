@@ -8,11 +8,14 @@ import { Product } from '@/lib/types';
 import { formatPrice } from '@/lib/utils/format';
 import { ShoppingCart, Package, ArrowLeft, Minus, Plus } from 'lucide-react';
 import Link from 'next/link';
+import { useCart } from '@/contexts/CartContext';
+import { toast } from 'sonner';
 
 export default function ProductDetailPage() {
   const params = useParams();
   const router = useRouter();
   const productId = params.id as string;
+  const { addToCart } = useCart();
   
   const [product, setProduct] = useState<Product | null>(null);
   const [loading, setLoading] = useState(true);
@@ -81,8 +84,10 @@ export default function ProductDetailPage() {
   };
 
   const handleAddToCart = () => {
-    // TODO: Implémenter avec CartContext
-    console.log('Ajout au panier:', product, 'quantité:', quantity);
+    if (product) {
+      addToCart(product, quantity);
+      toast.success(`${quantity} ${product.name} ajouté(s) au panier!`);
+    }
   };
 
   return (

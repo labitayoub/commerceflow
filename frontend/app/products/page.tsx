@@ -282,7 +282,3 @@ export default function ProductsPage() {
     </PageLayout>
   );
 }
-    )
-}
-
-export default Products;
