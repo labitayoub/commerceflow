@@ -19,6 +19,17 @@ interface AuthContextType {
 
 const AuthContext = createContext<AuthContextType | undefined>(undefined);
 
+// Helper functions pour gérer les cookies
+function setCookie(name: string, value: string, days: number = 7) {
+  const expires = new Date();
+  expires.setTime(expires.getTime() + days * 24 * 60 * 60 * 1000);
+  document.cookie = `${name}=${value};expires=${expires.toUTCString()};path=/;SameSite=Lax`;
+}
+
+function deleteCookie(name: string) {
+  document.cookie = `${name}=;expires=Thu, 01 Jan 1970 00:00:00 UTC;path=/;`;
+}
+
 export function AuthProvider({ children }: { children: ReactNode }) {
   const [user, setUser] = useState<User | null>(null);
   const [token, setToken] = useState<string | null>(null);
@@ -45,6 +56,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
             console.error('Token invalide:', error);
             localStorage.removeItem('token');
             localStorage.removeItem('user');
+            deleteCookie('token');
             setToken(null);
             setUser(null);
           }
@@ -59,6 +71,17 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     initAuth();
   }, []);
 
+  // Définir le cookie après l'hydratation (séparé pour éviter les erreurs d'hydratation)
+  useEffect(() => {
+    if (token && typeof window !== 'undefined') {
+      // Délai pour s'assurer que l'hydratation est terminée
+      const timer = setTimeout(() => {
+        setCookie('token', token, 7);
+      }, 0);
+      return () => clearTimeout(timer);
+    }
+  }, [token]);
+
   /**
    * Connexion
    */
@@ -69,6 +92,9 @@ export function AuthProvider({ children }: { children: ReactNode }) {
       // Sauvegarde du token et de l'utilisateur
       localStorage.setItem('token', response.accessToken);
       localStorage.setItem('user', JSON.stringify(response.user));
+      
+      // Sauvegarde aussi dans un cookie pour le middleware
+      setCookie('token', response.accessToken, 7);
       
       setToken(response.accessToken);
       setUser(response.user);
@@ -89,6 +115,9 @@ export function AuthProvider({ children }: { children: ReactNode }) {
       localStorage.setItem('token', response.accessToken);
       localStorage.setItem('user', JSON.stringify(response.user));
       
+      // Sauvegarde aussi dans un cookie pour le middleware
+      setCookie('token', response.accessToken, 7);
+      
       setToken(response.accessToken);
       setUser(response.user);
     } catch (error) {
@@ -102,6 +131,18 @@ export function AuthProvider({ children }: { children: ReactNode }) {
    */
   const logout = () => {
     authApi.logout();
+    
+    // Supprime le cookie
+    deleteCookie('token');
+    
+    // Vide aussi le panier
+    localStorage.removeItem('commerceflow_cart');
+    
+    // Déclenche un événement personnalisé pour notifier le CartContext
+    if (typeof window !== 'undefined') {
+      window.dispatchEvent(new CustomEvent('cart-cleared'));
+    }
+    
     setToken(null);
     setUser(null);
   };

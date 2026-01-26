@@ -12,7 +12,7 @@ import { MapPin, CreditCard, Package } from "lucide-react";
 
 export default function CheckoutPage() {
   const router = useRouter();
-  const { cart, clearCart } = useCart();
+  const { cart, clearCart, cartTotal } = useCart();
   const { user } = useAuth();
   const [loading, setLoading] = useState(false);
 
@@ -30,8 +30,6 @@ export default function CheckoutPage() {
     postalCode: "",
     country: "France",
   });
-
-  const total = cart.reduce((sum, item) => sum + (typeof item.price === 'number' ? item.price : parseFloat(String(item.price))) * item.quantity, 0);
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -280,7 +278,7 @@ export default function CheckoutPage() {
                 <div className="border-t border-gray-200 pt-4 space-y-2 mb-6">
                   <div className="flex justify-between text-gray-600">
                     <span>Sous-total</span>
-                    <span>{formatPrice(total)}</span>
+                    <span>{formatPrice(cartTotal)}</span>
                   </div>
                   <div className="flex justify-between text-gray-600">
                     <span>Livraison</span>
@@ -288,7 +286,7 @@ export default function CheckoutPage() {
                   </div>
                   <div className="flex justify-between text-lg font-bold text-gray-900">
                     <span>Total</span>
-                    <span>{formatPrice(total)}</span>
+                    <span>{formatPrice(cartTotal)}</span>
                   </div>
                 </div>
 

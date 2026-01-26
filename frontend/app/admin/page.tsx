@@ -118,9 +118,14 @@ export default function AdminDashboard() {
     <PageLayout>
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
         <div className="flex items-center justify-between mb-8">
-          <h1 className="text-3xl font-bold text-gray-900">
-            Tableau de bord Admin
-          </h1>
+          <div>
+            <h1 className="text-3xl font-bold text-gray-900">
+              Tableau de bord Admin
+            </h1>
+            <p className="text-sm text-gray-500 mt-1">
+              Bienvenue, {user?.firstName} {user?.lastName}
+            </p>
+          </div>
           <div className="flex items-center space-x-2 text-sm text-gray-500">
             <Activity className="h-4 w-4" />
             <span>Dernière mise à jour: {new Date().toLocaleTimeString('fr-FR')}</span>

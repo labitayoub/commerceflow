@@ -1,14 +1,18 @@
 'use client';
 
-import { useState } from 'react';
-import { useRouter } from 'next/navigation';
+import { useState, useEffect } from 'react';
+import { useRouter, useSearchParams } from 'next/navigation';
 import Link from 'next/link';
 import { useAuth } from '@/contexts/AuthContext';
+import { useCart } from '@/contexts/CartContext';
 import { Mail, Lock, LogIn } from 'lucide-react';
+import { toast } from 'sonner';
 
 export default function LoginPage() {
   const router = useRouter();
+  const searchParams = useSearchParams();
   const { login } = useAuth();
+  const { addToCart } = useCart();
   
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
@@ -22,7 +26,23 @@ export default function LoginPage() {
 
     try {
       await login(email, password);
-      router.push('/'); // Redirige vers la page d'accueil après connexion
+      
+      // Vérifier s'il y a un produit en attente d'ajout au panier
+      const pendingProduct = localStorage.getItem('pending_cart_product');
+      if (pendingProduct) {
+        try {
+          const product = JSON.parse(pendingProduct);
+          addToCart(product.product, product.quantity);
+          localStorage.removeItem('pending_cart_product');
+          toast.success(`${product.product.name} ajouté au panier!`);
+        } catch (err) {
+          console.error('Erreur lors de l\'ajout du produit en attente:', err);
+        }
+      }
+      
+      // Rediriger vers la page de retour ou l'accueil
+      const returnUrl = searchParams.get('returnUrl') || '/';
+      router.push(returnUrl);
     } catch (err) {
       setError(err instanceof Error ? err.message : 'Erreur de connexion');
     } finally {
@@ -45,6 +65,17 @@ export default function LoginPage() {
               S&apos;inscrire
             </Link>
           </p>
+        </div>
+
+        {/* Info Admin */}
+        <div className="bg-blue-50 border border-blue-200 rounded-lg p-4">
+          <p className="text-sm text-blue-800 font-medium mb-2">
+            🔑 Compte administrateur de test :
+          </p>
+          <div className="space-y-1 text-xs text-blue-700">
+            <p><span className="font-semibold">Email:</span> admin@commerceflow.com</p>
+            <p><span className="font-semibold">Mot de passe:</span> admin123</p>
+          </div>
         </div>
 
         {/* Formulaire */}

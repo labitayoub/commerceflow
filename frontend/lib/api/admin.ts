@@ -13,33 +13,33 @@ export const updateOrderStatus = async (orderId: string, status: string) => {
 
 // Admin Products
 export const createProduct = async (productData: any) => {
-  const response = await api.post('/product', productData);
+  const response = await api.post('/products', productData);
   return response.data;
 };
 
 export const updateProduct = async (productId: string, productData: any) => {
-  const response = await api.patch(`/product/${productId}`, productData);
+  const response = await api.patch(`/products/${productId}`, productData);
   return response.data;
 };
 
 export const deleteProduct = async (productId: string) => {
-  const response = await api.delete(`/product/${productId}`);
+  const response = await api.delete(`/products/${productId}`);
   return response.data;
 };
 
 // Admin Categories
 export const createCategory = async (categoryData: any) => {
-  const response = await api.post('/category', categoryData);
+  const response = await api.post('/categories', categoryData);
   return response.data;
 };
 
 export const updateCategory = async (categoryId: string, categoryData: any) => {
-  const response = await api.patch(`/category/${categoryId}`, categoryData);
+  const response = await api.patch(`/categories/${categoryId}`, categoryData);
   return response.data;
 };
 
 export const deleteCategory = async (categoryId: string) => {
-  const response = await api.delete(`/category/${categoryId}`);
+  const response = await api.delete(`/categories/${categoryId}`);
   return response.data;
 };
 

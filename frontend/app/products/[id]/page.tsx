@@ -9,6 +9,7 @@ import { formatPrice } from '@/lib/utils/format';
 import { ShoppingCart, Package, ArrowLeft, Minus, Plus } from 'lucide-react';
 import Link from 'next/link';
 import { useCart } from '@/contexts/CartContext';
+import { useAuth } from '@/contexts/AuthContext';
 import { toast } from 'sonner';
 
 export default function ProductDetailPage() {
@@ -16,6 +17,7 @@ export default function ProductDetailPage() {
   const router = useRouter();
   const productId = params.id as string;
   const { addToCart } = useCart();
+  const { isAuthenticated } = useAuth();
   
   const [product, setProduct] = useState<Product | null>(null);
   const [loading, setLoading] = useState(true);
@@ -84,10 +86,18 @@ export default function ProductDetailPage() {
   };
 
   const handleAddToCart = () => {
-    if (product) {
-      addToCart(product, quantity);
-      toast.success(`${quantity} ${product.name} ajouté(s) au panier!`);
+    if (!product) return;
+    
+    if (!isAuthenticated) {
+      // Sauvegarder le produit pour l'ajouter après connexion
+      localStorage.setItem('pending_cart_product', JSON.stringify({ product, quantity }));
+      toast.info('Connectez-vous pour ajouter au panier');
+      router.push(`/login?returnUrl=/products/${product.id}`);
+      return;
     }
+    
+    addToCart(product, quantity);
+    toast.success(`${quantity} ${product.name} ajouté(s) au panier!`);
   };
 
   return (

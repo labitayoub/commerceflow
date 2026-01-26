@@ -7,16 +7,11 @@ import { formatPrice } from "@/lib/utils/format";
 import PageLayout from "@/components/layout/PageLayout";
 
 const CartPage = () => {
-  const { cart, addToCart, removeFromCart, clearCart } = useCart();
+  const { cart, updateQuantity, removeFromCart, clearCart, cartTotal } = useCart();
 
-  const updateQuantity = (productId: string, currentQuantity: number, change: number) => {
-    const product = cart.find(item => item.id === productId);
-    if (product && currentQuantity + change > 0) {
-      addToCart(product, change);
-    }
+  const handleQuantityChange = (productId: string, newQuantity: number) => {
+    updateQuantity(productId, newQuantity);
   };
-
-  const total = cart.reduce((sum, item) => sum + (typeof item.price === 'number' ? item.price : parseFloat(String(item.price))) * item.quantity, 0);
 
   return (
     <PageLayout>
@@ -59,7 +54,7 @@ const CartPage = () => {
                     <div className="flex items-center justify-between">
                       <div className="flex items-center space-x-3">
                         <button
-                          onClick={() => updateQuantity(item.id, item.quantity, -1)}
+                          onClick={() => handleQuantityChange(item.id, item.quantity - 1)}
                           className="p-1 rounded-md hover:bg-gray-100 transition-colors"
                           disabled={item.quantity <= 1}
                         >
@@ -69,7 +64,7 @@ const CartPage = () => {
                           {item.quantity}
                         </span>
                         <button
-                          onClick={() => updateQuantity(item.id, item.quantity, 1)}
+                          onClick={() => handleQuantityChange(item.id, item.quantity + 1)}
                           className="p-1 rounded-md hover:bg-gray-100 transition-colors"
                         >
                           <Plus className="h-4 w-4 text-gray-600" />
@@ -108,7 +103,7 @@ const CartPage = () => {
                 <div className="space-y-3 mb-6">
                   <div className="flex justify-between text-gray-600">
                     <span>Sous-total ({cart.length} articles)</span>
-                    <span>{formatPrice(total)}</span>
+                    <span>{formatPrice(cartTotal)}</span>
                   </div>
                   <div className="flex justify-between text-gray-600">
                     <span>Livraison</span>
@@ -116,7 +111,7 @@ const CartPage = () => {
                   </div>
                   <div className="border-t border-gray-200 pt-3 flex justify-between text-lg font-bold text-gray-900">
                     <span>Total</span>
-                    <span>{formatPrice(total)}</span>
+                    <span>{formatPrice(cartTotal)}</span>
                   </div>
                 </div>
 

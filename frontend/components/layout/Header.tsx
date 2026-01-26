@@ -2,15 +2,14 @@
 
 import Link from 'next/link';
 import { useAuth } from '@/contexts/AuthContext';
+import { useCart } from '@/contexts/CartContext';
 import { ShoppingCart, User, LogOut, LayoutDashboard, Package, Menu, X } from 'lucide-react';
 import { useState } from 'react';
 
 export default function Header() {
   const { user, isAuthenticated, isAdmin, logout } = useAuth();
+  const { cartCount, isInitialized } = useCart();
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
-
-  // TODO: Récupérer le nombre d'items dans le panier depuis CartContext
-  const cartItemsCount = 0;
 
   return (
     <header className="bg-white shadow-sm sticky top-0 z-50">
@@ -47,9 +46,9 @@ export default function Header() {
               className="relative p-2 text-gray-700 hover:text-blue-600 transition-colors"
             >
               <ShoppingCart className="h-6 w-6" />
-              {cartItemsCount > 0 && (
+              {isInitialized && cartCount > 0 && (
                 <span className="absolute -top-1 -right-1 bg-red-500 text-white text-xs rounded-full h-5 w-5 flex items-center justify-center">
-                  {cartItemsCount}
+                  {cartCount > 99 ? '99+' : cartCount}
                 </span>
               )}
             </Link>
@@ -59,7 +58,7 @@ export default function Header() {
                 {/* Admin Dashboard Link */}
                 {isAdmin && (
                   <Link
-                    href="/admin/dashboard"
+                    href="/admin"
                     className="flex items-center space-x-1 px-3 py-2 text-gray-700 hover:text-blue-600 transition-colors"
                   >
                     <LayoutDashboard className="h-5 w-5" />
@@ -68,15 +67,13 @@ export default function Header() {
                 )}
 
                 {/* User Orders Link */}
-                {!isAdmin && (
-                  <Link
-                    href="/orders"
-                    className="flex items-center space-x-1 px-3 py-2 text-gray-700 hover:text-blue-600 transition-colors"
-                  >
-                    <Package className="h-5 w-5" />
-                    <span className="font-medium">Mes commandes</span>
-                  </Link>
-                )}
+                <Link
+                  href="/orders"
+                  className="flex items-center space-x-1 px-3 py-2 text-gray-700 hover:text-blue-600 transition-colors"
+                >
+                  <Package className="h-5 w-5" />
+                  <span className="font-medium">Mes commandes</span>
+                </Link>
 
                 {/* User Menu */}
                 <div className="flex items-center space-x-3 border-l pl-4">
@@ -150,7 +147,7 @@ export default function Header() {
               className="block px-4 py-2 text-gray-700 hover:bg-gray-100 rounded-lg"
               onClick={() => setMobileMenuOpen(false)}
             >
-              Panier {cartItemsCount > 0 && `(${cartItemsCount})`}
+              Panier {isInitialized && cartCount > 0 && `(${cartCount})`}
             </Link>
 
             {isAuthenticated ? (

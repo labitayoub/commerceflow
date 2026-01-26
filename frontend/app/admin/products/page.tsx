@@ -101,12 +101,10 @@ export default function AdminProductsPage() {
     try {
       const productData = {
         name: formData.name,
-        description: formData.description,
-        price: formData.price,
-        categoryId: formData.categoryId || null,
-        sku: {
-          stock: parseInt(formData.stock)
-        }
+        description: formData.description || undefined,
+        price: parseFloat(formData.price),
+        stock: parseInt(formData.stock),
+        categoryId: formData.categoryId || undefined
       };
 
       if (editingProduct) {

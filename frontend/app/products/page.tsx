@@ -1,16 +1,22 @@
 'use client';
 
 import { useEffect, useState } from 'react';
-import { useSearchParams } from 'next/navigation';
+import { useSearchParams, useRouter } from 'next/navigation';
 import PageLayout from '@/components/layout/PageLayout';
 import ProductCard from '@/components/product/ProductCard';
 import { getProducts } from '@/lib/api/products';
 import { getCategories } from '@/lib/api/categories';
 import { Product, Category } from '@/lib/types';
 import { Search, Filter, ChevronLeft, ChevronRight } from 'lucide-react';
+import { useCart } from '@/contexts/CartContext';
+import { useAuth } from '@/contexts/AuthContext';
+import { toast } from 'sonner';
 
 export default function ProductsPage() {
   const searchParams = useSearchParams();
+  const router = useRouter();
+  const { addToCart } = useCart();
+  const { isAuthenticated } = useAuth();
   
   const [products, setProducts] = useState<Product[]>([]);
   const [categories, setCategories] = useState<Category[]>([]);
@@ -82,6 +88,18 @@ export default function ProductsPage() {
     setMinPrice('');
     setMaxPrice('');
     setCurrentPage(1);
+  };
+
+  const handleAddToCart = (product: Product) => {
+    if (!isAuthenticated) {
+      // Sauvegarder le produit pour l'ajouter après connexion
+      localStorage.setItem('pending_cart_product', JSON.stringify({ product, quantity: 1 }));
+      toast.info('Connectez-vous pour ajouter au panier');
+      router.push('/login?returnUrl=/products');
+      return;
+    }
+    addToCart(product, 1);
+    toast.success(`${product.name} ajouté au panier!`);
   };
 
   return (
@@ -205,7 +223,11 @@ export default function ProductsPage() {
                 <>
                   <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
                     {products.map((product) => (
-                      <ProductCard key={product.id} product={product} />
+                      <ProductCard 
+                        key={product.id} 
+                        product={product}
+                        onAddToCart={handleAddToCart}
+                      />
                     ))}
                   </div>
 
