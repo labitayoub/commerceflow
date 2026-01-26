@@ -8,10 +8,10 @@ export class InventoryService {
   constructor(private readonly prisma: PrismaService) {}
 
   async updateStock(productId: string, updateStockDto: UpdateStockDto): Promise<SKU> {
-    const sku = await this.prisma.sku.findUnique({ where: { productId } });
+    const sku = await this.prisma.sKU.findUnique({ where: { productId } });
 
     if (!sku) {
-      return this.prisma.sku.create({
+      return this.prisma.sKU.create({
         data: {
           productId,
           stock: updateStockDto.stock,
@@ -20,14 +20,14 @@ export class InventoryService {
       });
     }
 
-    return this.prisma.sku.update({
+    return this.prisma.sKU.update({
       where: { productId },
       data: { stock: updateStockDto.stock },
     });
   }
 
   async reserveStock(productId: string, quantity: number): Promise<SKU> {
-    const sku = await this.prisma.sku.findUnique({ where: { productId } });
+    const sku = await this.prisma.sKU.findUnique({ where: { productId } });
 
     if (!sku) {
       throw new NotFoundException(`SKU for product ${productId} not found`);
@@ -38,27 +38,27 @@ export class InventoryService {
       throw new BadRequestException(`Insufficient stock. Available: ${available}, Requested: ${quantity}`);
     }
 
-    return this.prisma.sku.update({
+    return this.prisma.sKU.update({
       where: { productId },
       data: { reserved: sku.reserved + quantity },
     });
   }
 
   async releaseStock(productId: string, quantity: number): Promise<SKU> {
-    const sku = await this.prisma.sku.findUnique({ where: { productId } });
+    const sku = await this.prisma.sKU.findUnique({ where: { productId } });
 
     if (!sku) {
       throw new NotFoundException(`SKU for product ${productId} not found`);
     }
 
-    return this.prisma.sku.update({
+    return this.prisma.sKU.update({
       where: { productId },
       data: { reserved: Math.max(0, sku.reserved - quantity) },
     });
   }
 
   async getAvailableStock(productId: string): Promise<{ available: number; total: number; reserved: number }> {
-    const sku = await this.prisma.sku.findUnique({ where: { productId } });
+    const sku = await this.prisma.sKU.findUnique({ where: { productId } });
 
     if (!sku) {
       return { available: 0, total: 0, reserved: 0 };
@@ -85,14 +85,14 @@ export class InventoryService {
   }
 
   async findAll() {
-    return this.prisma.sku.findMany({
+    return this.prisma.sKU.findMany({
       include: { product: { include: { category: true } } },
       orderBy: { stock: 'asc' },
     });
   }
 
   async findOne(productId: string): Promise<SKU> {
-    const sku = await this.prisma.sku.findUnique({
+    const sku = await this.prisma.sKU.findUnique({
       where: { productId },
       include: { product: true },
     });

@@ -21,7 +21,7 @@ export class CategoryController {
   create(@Body() createCategoryDto: CreateCategoryDto) {
     return this.categoryService.create(createCategoryDto);
   }
-
+ 
   @Get()
   @ApiOperation({ summary: 'Get all categories' })
   findAll() {
